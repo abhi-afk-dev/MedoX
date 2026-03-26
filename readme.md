@@ -12,13 +12,27 @@ In rural healthcare systems, Auxiliary Nurse Midwives (ANMs) and community healt
 
 ---
 
+
 ## ✨ Key Features (The 5 Pillars)
 
 1. **🏠 Home (AI Assistant):** A multimodal chatbot powered by MedGemma for clinical guidance and Gemini 2.5 Flash for analyzing medical images (prescriptions, visible symptoms).
+   ![Home](https://github.com/user-attachments/assets/780ba598-9376-4d6c-97b0-20732923ad60)
+
 2. **🎙️ Voice Scribe:** Uses locally processed Whisper AI to transcribe chaotic voice notes into structured SBAR (Situation, Background, Assessment, Recommendation) formats.
+   ![Scribe](https://github.com/user-attachments/assets/cc0934a3-ed78-436f-962e-23bddbe13ccc)
+
 3. **📂 Patient Records:** A localized database of patient visits featuring a one-click portal to a live **Looker Studio Public Health Dashboard** for epidemic tracking.
-4. **📅 Tasks (Smart Calendar):** Two-way synchronization with Google Calendar. The AI automatically detects follow-up dates in voice notes and schedules them. Marking a task complete in the app updates the cloud calendar instantly.
-5. **📦 Stock (Agentic Inventory):** Real-time clinic inventory management. Tapping `+` or `-` in the app directly reads/writes to a centralized Google Sheet, alerting the district PHC when essential medicines run low.
+   ![Records](https://github.com/user-attachments/assets/ca342a5f-2459-4a42-98da-a462fcb0d7d7)
+   ![Patient](https://github.com/user-attachments/assets/a3e4a2b7-a504-48ec-a66a-99c971219743)
+   ![Analytics](https://github.com/user-attachments/assets/e7294fc9-c40b-45f3-9791-56d802500b3e)
+
+
+5. **📅 Tasks (Smart Calendar):** Two-way synchronization with Google Calendar. The AI automatically detects follow-up dates in voice notes and schedules them. Marking a task complete in the app updates the cloud calendar instantly.
+   ![Calendar](https://github.com/user-attachments/assets/3f87c2c7-3f83-4458-a746-c4a2e170be26)
+
+6. **📦 Stock (Agentic Inventory):** Real-time clinic inventory management. Tapping `+` or `-` in the app directly reads/writes to a centralized Google Sheet, alerting the district PHC when essential medicines run low.
+   ![Inventory](https://github.com/user-attachments/assets/816d1c9b-bbfd-46a1-9947-906bd2363ced)
+
 
 ---
 
