@@ -22,8 +22,8 @@ In rural healthcare systems, Auxiliary Nurse Midwives (ANMs) and community healt
 ![Scribe](https://github.com/user-attachments/assets/58f8372b-4c27-48aa-a7d7-7fc012877c68)
 
 3. **📂 Patient Records:** A localized database of patient visits featuring a one-click portal to a live **Looker Studio Public Health Dashboard** for epidemic tracking.
-![Records](https://github.com/user-attachments/assets/11e96279-3c0d-4791-8627-6bbc456e28ef)
-![Patient](https://github.com/user-attachments/assets/09bb10c0-9ecd-4570-8346-c057cde9fdbe)
+![Records](https://github.com/user-attachments/assets/11e96279-3c0d-4791-8627-6bbc456e28ef)          ![Patient](https://github.com/user-attachments/assets/09bb10c0-9ecd-4570-8346-c057cde9fdbe)
+
 ![Analytics](https://github.com/user-attachments/assets/54a12397-5ec6-49ac-a221-14ddff0990d2)
 
 5. **📅 Tasks (Smart Calendar):** Two-way synchronization with Google Calendar. The AI automatically detects follow-up dates in voice notes and schedules them. Marking a task complete in the app updates the cloud calendar instantly.
