@@ -16,22 +16,21 @@ In rural healthcare systems, Auxiliary Nurse Midwives (ANMs) and community healt
 ## ✨ Key Features (The 5 Pillars)
 
 1. **🏠 Home (AI Assistant):** A multimodal chatbot powered by MedGemma for clinical guidance and Gemini 2.5 Flash for analyzing medical images (prescriptions, visible symptoms).
-   ![Home](https://github.com/user-attachments/assets/780ba598-9376-4d6c-97b0-20732923ad60)
+![Home](https://github.com/user-attachments/assets/2190ed6a-e161-46c3-bfe4-112f30852d15)
 
 2. **🎙️ Voice Scribe:** Uses locally processed Whisper AI to transcribe chaotic voice notes into structured SBAR (Situation, Background, Assessment, Recommendation) formats.
-   ![Scribe](https://github.com/user-attachments/assets/cc0934a3-ed78-436f-962e-23bddbe13ccc)
+![Scribe](https://github.com/user-attachments/assets/58f8372b-4c27-48aa-a7d7-7fc012877c68)
 
 3. **📂 Patient Records:** A localized database of patient visits featuring a one-click portal to a live **Looker Studio Public Health Dashboard** for epidemic tracking.
-   ![Records](https://github.com/user-attachments/assets/ca342a5f-2459-4a42-98da-a462fcb0d7d7)
-   ![Patient](https://github.com/user-attachments/assets/a3e4a2b7-a504-48ec-a66a-99c971219743)
-   ![Analytics](https://github.com/user-attachments/assets/e7294fc9-c40b-45f3-9791-56d802500b3e)
-
+![Records](https://github.com/user-attachments/assets/11e96279-3c0d-4791-8627-6bbc456e28ef)
+![Patient](https://github.com/user-attachments/assets/09bb10c0-9ecd-4570-8346-c057cde9fdbe)
+![Analytics](https://github.com/user-attachments/assets/54a12397-5ec6-49ac-a221-14ddff0990d2)
 
 5. **📅 Tasks (Smart Calendar):** Two-way synchronization with Google Calendar. The AI automatically detects follow-up dates in voice notes and schedules them. Marking a task complete in the app updates the cloud calendar instantly.
-   ![Calendar](https://github.com/user-attachments/assets/3f87c2c7-3f83-4458-a746-c4a2e170be26)
+![Calendar](https://github.com/user-attachments/assets/2af48238-07e0-42ea-b5b5-eb35c8bc8058)
 
 6. **📦 Stock (Agentic Inventory):** Real-time clinic inventory management. Tapping `+` or `-` in the app directly reads/writes to a centralized Google Sheet, alerting the district PHC when essential medicines run low.
-   ![Inventory](https://github.com/user-attachments/assets/816d1c9b-bbfd-46a1-9947-906bd2363ced)
+![Inventory](https://github.com/user-attachments/assets/3dd7837c-c35e-414d-8d71-e344a19f516f)
 
 
 ---
