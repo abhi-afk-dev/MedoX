@@ -2,6 +2,7 @@
 # 🚨 CRITICAL SECRETS & CREDENTIALS 🚨
 # ==========================================
 # Never commit these to version control!
+
 backend/.env
 .env
 backend/medox_service_account.json
