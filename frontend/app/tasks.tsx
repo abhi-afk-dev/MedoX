@@ -11,8 +11,28 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import Header from "../components/head";
 
-// REPLACE WITH YOUR BACKEND IP
-const API_URL = "http://192.168.0.111:8000/tasks/";
+const API_BASE = "http://10.26.147.30:8000/tasks/";
+
+const formatDisplayDate = (dateString: string) => {
+  if (!dateString) return "No date";
+
+  try {
+    const dateObj = new Date(dateString.replace(" ", "T"));
+    if (isNaN(dateObj.getTime())) return dateString;
+    const hasTime = dateString.includes("T") || dateString.includes(":");
+
+    const options: Intl.DateTimeFormatOptions = {
+      month: "short",
+      day: "numeric",
+      ...(hasTime && { hour: "numeric", minute: "2-digit", hour12: true }),
+    };
+
+    const formatted = new Intl.DateTimeFormat("en-US", options).format(dateObj);
+    return formatted.replace(", ", " · ");
+  } catch (error) {
+    return dateString;
+  }
+};
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<any[]>([]);
@@ -21,7 +41,7 @@ export default function TasksPage() {
 
   const fetchCalendarTasks = async () => {
     try {
-      const response = await fetch(API_URL);
+      const response = await fetch(API_BASE);
       const data = await response.json();
       if (data.tasks) {
         setTasks(data.tasks);
@@ -57,7 +77,7 @@ export default function TasksPage() {
     );
 
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetch(API_BASE, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: id, status: newStatus }),
@@ -76,6 +96,14 @@ export default function TasksPage() {
 
   const renderItem = ({ item }: { item: any }) => {
     const isCompleted = item.status === "completed";
+
+    const rawReason = item.reason ? String(item.reason).trim() : "";
+    const displayReason =
+      rawReason.toLowerCase() === "none" ||
+      rawReason.toLowerCase() === "n/a" ||
+      rawReason === ""
+        ? "Routine Follow-up"
+        : rawReason;
 
     return (
       <View style={[styles.card, isCompleted && styles.cardCompleted]}>
@@ -99,11 +127,11 @@ export default function TasksPage() {
           <Text
             style={[styles.reasonText, isCompleted && styles.textCompleted]}
           >
-            {item.reason}
+            {displayReason}
           </Text>
           <View style={styles.dateBadge}>
             <Ionicons name="calendar-outline" size={12} color="#A1A1AA" />
-            <Text style={styles.dateText}>{item.date}</Text>
+            <Text style={styles.dateText}>{formatDisplayDate(item.date)}</Text>
           </View>
         </View>
       </View>
@@ -115,12 +143,6 @@ export default function TasksPage() {
       <Header />
       <View style={styles.content}>
         <View style={styles.headerRow}>
-          <View>
-            <Text style={styles.pageTitle}>Community Visits</Text>
-            <Text style={styles.subtitle}>
-              Auto-synced from Google Calendar
-            </Text>
-          </View>
           <TouchableOpacity onPress={onRefresh} style={styles.refreshBtn}>
             <Ionicons name="sync" size={20} color="#F4F4F5" />
           </TouchableOpacity>
@@ -151,6 +173,17 @@ export default function TasksPage() {
                 No upcoming follow-ups scheduled.
               </Text>
             }
+            ListFooterComponent={
+              tasks.length > 0 ? (
+                <View style={styles.footerContainer}>
+                  <Text style={styles.footerIcon}>🎉</Text>
+                  <Text style={styles.footerTitle}>All caught up!</Text>
+                  <Text style={styles.footerSubText}>
+                    No more scheduled tasks.
+                  </Text>
+                </View>
+              ) : null
+            }
           />
         )}
       </View>
@@ -163,7 +196,7 @@ const styles = StyleSheet.create({
   content: { flex: 1, paddingHorizontal: 20, paddingTop: 10 },
   headerRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
     alignItems: "center",
   },
   pageTitle: { fontSize: 24, fontWeight: "bold", color: "#F4F4F5" },
@@ -174,16 +207,19 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: "#27272A",
+    marginBottom: 10,
   },
 
   card: {
     flexDirection: "row",
-    backgroundColor: "#27272A",
+    backgroundColor: "#18181B",
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#27272A",
   },
-  cardCompleted: { opacity: 0.6 },
+  cardCompleted: { opacity: 0.5 },
   cardLeft: { marginRight: 16, justifyContent: "center" },
   checkbox: {
     width: 24,
@@ -204,17 +240,40 @@ const styles = StyleSheet.create({
   dateBadge: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#18181B",
+    backgroundColor: "#27272A",
     alignSelf: "flex-start",
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
   },
-  dateText: { fontSize: 12, color: "#A1A1AA", marginLeft: 4 },
+  dateText: { fontSize: 12, color: "#D4D4D8", marginLeft: 4 },
+
   emptyText: {
     color: "#A1A1AA",
     textAlign: "center",
     marginTop: 40,
     fontSize: 16,
+  },
+
+  footerContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 40,
+    marginTop: 10,
+    opacity: 0.8,
+  },
+  footerIcon: {
+    fontSize: 32,
+    marginBottom: 8,
+  },
+  footerTitle: {
+    color: "#F4F4F5",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  footerSubText: {
+    color: "#71717A",
+    fontSize: 14,
+    marginTop: 4,
   },
 });

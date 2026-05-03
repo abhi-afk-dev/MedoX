@@ -17,7 +17,7 @@ from .services import append_to_google_sheet, schedule_follow_up, get_inventory_
 
 load_dotenv()
 
-STT_MODEL = WhisperModel("small.en", device="cpu", compute_type="int8")
+STT_MODEL = WhisperModel("small", device="cpu", compute_type="int8")
 
 gemini_client = genai.Client(api_key=os.getenv('GEMINI'))
 featherless_client = OpenAI(
@@ -35,22 +35,36 @@ def generate_chat_guidance(user_query):
                 Keep answers as concise as you can. Do NOT generate JSON.
                 """
 
-        response = featherless_client.chat.completions.create(
-          model='google/medgemma-27b-text-it',
-          messages=[
-            {"role": "system", "content": system_instruction},
-            {"role": "user", "content": user_query}
-          ],
-          stream=True
+        # --- FEATHERLESS LOGIC (COMMENTED OUT) ---
+        # response = featherless_client.chat.completions.create(
+        #   model='google/medgemma-27b-text-it',
+        #   messages=[
+        #     {"role": "system", "content": system_instruction},
+        #     {"role": "user", "content": user_query}
+        #   ],
+        #   stream=True
+        # )
+        # 
+        # for chunk in response:
+        #     if chunk.choices[0].delta.content is not None:
+        #         yield chunk.choices[0].delta.content
+
+        # --- GEMINI LOGIC (ADDED) ---
+        response = gemini_client.models.generate_content_stream(
+            model='gemini-2.5-flash',
+            contents=user_query,
+            config=types.GenerateContentConfig(
+                system_instruction=system_instruction
+            )
         )
-        
         for chunk in response:
-            if chunk.choices[0].delta.content is not None:
-                yield chunk.choices[0].delta.content
+            if chunk.text:
+                yield chunk.text
                 
     except Exception as e:
         print(f"Chat Error: {e}")
         yield "I am having trouble connecting to the network."
+
 
 def generate_chat_with_image(text_prompt, image_file):
     try:
@@ -77,6 +91,7 @@ def generate_chat_with_image(text_prompt, image_file):
         print(f"Image Analysis Error: {e}")
         yield "I had trouble analyzing that image. Please try again."
 
+
 def generate_sbar_from_note(raw_note):
     try:
         system_instruction="""
@@ -92,15 +107,27 @@ def generate_sbar_from_note(raw_note):
         6. "follow_up": Text instructions for next visit.
         7. "follow_up_days": (INTEGER ONLY) The number of days until the follow up. If "next week", output 7. If "tomorrow", output 1. If none, output 0.
         """
-        response = featherless_client.chat.completions.create(
-          model='google/medgemma-27b-text-it',
-          messages=[
-            {"role": "system", "content": system_instruction},
-            {"role": "user", "content": f"Note:\n{raw_note}"}
-          ],
-        )
+        
+        # --- FEATHERLESS LOGIC (COMMENTED OUT) ---
+        # response = featherless_client.chat.completions.create(
+        #   model='google/medgemma-27b-text-it',
+        #   messages=[
+        #     {"role": "system", "content": system_instruction},
+        #     {"role": "user", "content": f"Note:\n{raw_note}"}
+        #   ],
+        # )
+        # text = response.choices[0].message.content.strip()
 
-        text = response.choices[0].message.content.strip()
+        # --- GEMINI LOGIC (ADDED) ---
+        response = gemini_client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=f"Note:\n{raw_note}",
+            config=types.GenerateContentConfig(
+                system_instruction=system_instruction,
+                response_mime_type="application/json"
+            )
+        )
+        text = response.text.strip()
         
         if text.startswith("```"):
             text = text.split("\n", 1)[1] if "\n" in text else text
@@ -113,6 +140,7 @@ def generate_sbar_from_note(raw_note):
         print(f"AI Service Error: {e}")
         return None
     
+
 def transcribe_audio(audio_file) -> str:
     try:
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_audio:
@@ -128,6 +156,7 @@ def transcribe_audio(audio_file) -> str:
     except Exception as e:
         print(f"STT Error: {e}")
         return ""
+
 
 @csrf_exempt
 def interface_med(request):
@@ -159,6 +188,7 @@ def interface_med(request):
 
     return JsonResponse({"error": "POST required"})
 
+
 @csrf_exempt
 def interface_audio(request):
     if request.method == "POST":
@@ -172,16 +202,16 @@ def interface_audio(request):
                     print(f"STT Transcribed: '{query[:50]}...'")
                 elif 'text' in request.POST:
                     query = request.POST.get('text')
-            
+
             else:
                 data = json.loads(request.body)
                 query = data.get("prompt", "")
 
             if not query:
                 return JsonResponse({"error": "No input provided"})
-            
+
             reply_json = generate_sbar_from_note(query)
-            
+
             if reply_json:
                 patient_name = reply_json.get("patient_name", "Unknown")
                 diagnosis = reply_json.get("diagnosis", "N/A")                
@@ -190,11 +220,11 @@ def interface_audio(request):
                     ai_response=reply_json,
                     patient_name=patient_name
                 )
-                
+
                 vitals = str(reply_json.get("vitals", "N/A"))                
                 symptoms_raw = reply_json.get("symptoms", [])
                 symptoms = ", ".join(symptoms_raw) if isinstance(symptoms_raw, list) else str(symptoms_raw or "N/A")
-                
+
                 plan = reply_json.get("plan", "N/A")
                 current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -206,6 +236,7 @@ def interface_audio(request):
                     diagnosis,
                     plan
                 ]
+
                 try:
                     append_to_google_sheet(row_data)
                 except Exception as e:
@@ -215,6 +246,7 @@ def interface_audio(request):
                     follow_up_days = int(reply_json.get("follow_up_days", 0))
                     if follow_up_days > 0:
                         schedule_follow_up(patient_name, diagnosis, follow_up_days)
+
                 except ValueError:
                     print("Follow-up days was not a valid integer from AI.")
                 except Exception as e:
@@ -230,6 +262,7 @@ def interface_audio(request):
             return JsonResponse({"reply": f"Error: {str(e)}"})
 
     return JsonResponse({"error": "POST required"})
+
 
 @csrf_exempt
 def manage_inventory(request):
@@ -254,6 +287,7 @@ def manage_inventory(request):
                 return JsonResponse({"error": "Failed to update Google Sheets"}, status=500)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
+
 
 @csrf_exempt
 def fetch_tasks(request):
@@ -285,6 +319,7 @@ def fetch_tasks(request):
             return JsonResponse({"error": str(e)}, status=500)
 
     return JsonResponse({"error": "Method not allowed"})
+
 
 @csrf_exempt
 def fetch_records(request):

@@ -37,6 +37,32 @@ interface ApiResponse {
   sbar_history: RecordItem[];
 }
 
+// --- HELPER FUNCTION: Format the Date ---
+const formatDisplayDate = (dateString: string) => {
+  try {
+    // Attempt to parse the string "YYYY-MM-DD HH:MM" into a valid Date object
+    const dateObj = new Date(dateString.replace(" ", "T")); // Adding 'T' makes it ISO 8601 compliant for Safari/iOS
+
+    if (isNaN(dateObj.getTime())) return dateString; // Fallback if parsing fails
+
+    const options: Intl.DateTimeFormatOptions = {
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    };
+
+    // Formats to: "Mar 26, 5:58 PM"
+    const formatted = new Intl.DateTimeFormat("en-US", options).format(dateObj);
+
+    // Replaces the comma with the dot separator you requested: "Mar 26 · 5:58 PM"
+    return formatted.replace(", ", " · ");
+  } catch (error) {
+    return dateString; // Return original string if anything goes wrong
+  }
+};
+
 export default function RecordsPage() {
   const insets = useSafeAreaInsets();
   const [records, setRecords] = useState<RecordItem[]>([]);
@@ -45,11 +71,11 @@ export default function RecordsPage() {
   const [selectedRecord, setSelectedRecord] = useState<RecordItem | null>(null);
 
   // UPDATE TO YOUR IP
-  const API_URL = "http://192.168.0.111:8000/records/";
+  const API_BASE = "http://10.26.147.30:8000/records/";
 
   const fetchRecords = async () => {
     try {
-      const response = await fetch(API_URL);
+      const response = await fetch(API_BASE);
       const data: ApiResponse = await response.json();
 
       const sorted = data.sbar_history.sort(
@@ -73,25 +99,27 @@ export default function RecordsPage() {
     setRefreshing(true);
     fetchRecords();
   };
-const handleOpenDashboard = async () => {
-  const dashboardUrl =
-    "https://lookerstudio.google.com/reporting/60ae83c3-9b9e-481a-9894-df6fbbfc9b59";
-  try {
-    await Linking.openURL(dashboardUrl);
-  } catch (error) {
-    console.error("Failed to open Dashboard URL:", error);
-  }
-};
 
-const handleOpenSheet = async () => {
-  const sheetUrl =
-    "https://docs.google.com/spreadsheets/d/1MbyoX9ykN8cr6u7y6dmddFfdHoeqQS9rvS1gHoN7qIM/edit?gid=0#gid=0";
-  try {
-    await Linking.openURL(sheetUrl);
-  } catch (error) {
-    console.error("Failed to open Sheet URL:", error);
-  }
-};
+  const handleOpenDashboard = async () => {
+    const dashboardUrl =
+      "https://lookerstudio.google.com/reporting/60ae83c3-9b9e-481a-9894-df6fbbfc9b59";
+    try {
+      await Linking.openURL(dashboardUrl);
+    } catch (error) {
+      console.error("Failed to open Dashboard URL:", error);
+    }
+  };
+
+  const handleOpenSheet = async () => {
+    const sheetUrl =
+      "https://docs.google.com/spreadsheets/d/1MbyoX9ykN8cr6u7y6dmddFfdHoeqQS9rvS1gHoN7qIM/edit?gid=0#gid=0";
+    try {
+      await Linking.openURL(sheetUrl);
+    } catch (error) {
+      console.error("Failed to open Sheet URL:", error);
+    }
+  };
+
   const renderItem = ({ item }: { item: RecordItem }) => (
     <TouchableOpacity
       style={styles.card}
@@ -102,7 +130,8 @@ const handleOpenSheet = async () => {
         <View style={styles.badgeBlue}>
           <Text style={styles.textBlue}>Clinical Note</Text>
         </View>
-        <Text style={styles.dateText}>{item.date}</Text>
+        {/* --- APPLIED FORMATTING HERE --- */}
+        <Text style={styles.dateText}>{formatDisplayDate(item.date)}</Text>
       </View>
 
       <View style={styles.cardContent}>
@@ -130,16 +159,15 @@ const handleOpenSheet = async () => {
       <Header />
 
       <View style={styles.listHeader}>
-        <Text style={styles.pageTitle}>Patient History</Text>
         <View style={styles.actionButtonGroup}>
-          {/* Dashboard Button */}
           <TouchableOpacity
             style={[styles.actionButton, styles.dashboardBtn]}
             activeOpacity={0.8}
             onPress={handleOpenDashboard}
           >
-            <Ionicons name="pie-chart" size={18} color="#F4F4F5" />
-            <Text style={styles.actionBtnTextDark}>Analytics</Text>
+            <Ionicons name="analytics" size={18} color="#f5f4f5" />
+            <Text style={styles.actionBtnTextDark}>District Dashboard</Text>
+            <Text style={styles.actionBtnTextWeb}>↗</Text>
           </TouchableOpacity>
 
           {/* Raw Sheet Button */}
@@ -179,7 +207,6 @@ const handleOpenSheet = async () => {
         />
       )}
 
-      {/* Detail Modal */}
       <Modal
         visible={!!selectedRecord}
         animationType="slide"
@@ -207,6 +234,10 @@ const handleOpenSheet = async () => {
                       {selectedRecord.patient || "Unknown"}
                     </Text>
                   </View>
+
+                  <Text style={styles.modalDateText}>
+                    Saved on: {formatDisplayDate(selectedRecord.date)}
+                  </Text>
 
                   {Object.entries(selectedRecord.full_data || {}).map(
                     ([key, value]) => {
@@ -239,7 +270,6 @@ const handleOpenSheet = async () => {
                             </View>
                           ) : (
                             <Text style={styles.detailValue}>
-                              {/* Safely convert null/undefined to strings */}
                               {value !== null && value !== undefined
                                 ? String(value)
                                 : "N/A"}
@@ -302,8 +332,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   dashboardBtn: {
-    backgroundColor: "#4c8df5dc",
-    borderColor: "#646464",
+    backgroundColor: "#c23eff",
+    borderColor: "#cd7ff1",
   },
   sheetBtn: {
     backgroundColor: "transparent",
@@ -313,6 +343,12 @@ const styles = StyleSheet.create({
     color: "#F4F4F5",
     fontWeight: "bold",
     fontSize: 14,
+    marginLeft: 6,
+  },
+  actionBtnTextWeb: {
+    color: "#F4F4F5",
+    fontWeight: "bold",
+    fontSize: 24,
     marginLeft: 6,
   },
   actionBtnTextLight: {
@@ -435,7 +471,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#27272A",
     padding: 16,
     borderRadius: 8,
-    marginBottom: 24,
+    marginBottom: 12,
     alignItems: "center",
   },
   infoLabel: {
@@ -449,6 +485,13 @@ const styles = StyleSheet.create({
     color: "#F4F4F5",
     fontSize: 20,
     fontWeight: "bold",
+  },
+  modalDateText: {
+    color: "#71717A",
+    fontSize: 12,
+    textAlign: "center",
+    marginBottom: 24,
+    fontStyle: "italic",
   },
   detailSection: {
     marginBottom: 24,

@@ -1,91 +1,181 @@
-# MedoX 🩺 | Autonomous AI Scribe & Epidemic Tracker
+# MedoX 🩺
+### Autonomous AI Scribe & Epidemic Tracker for Rural Healthcare
 
-> **Built for ImpactHacks by HackathonForAll** > Empowering rural healthcare workers by automating clinical notes, managing inventory, and tracking public health in real-time.
+> Built for **the GNEC Hackathon**
+> Powered by **MedGemma** via [featherless.ai](https://featherless.ai)
+---
+## 🎯 Alignment with UN SDG 3: Health and Well-being
+MedoX directly addresses **Target 3.c** of the UN Sustainable Development Goals: *substantially increase health financing and the recruitment, development, training, and retention of the health workforce in developing countries.* 
+
+By digitizing the last mile of healthcare without requiring new hardware or internet reliance, MedoX fortifies rural health infrastructure, creates real-time epidemic tracking for NGOs, and gives community health workers their time back to focus on actual patient care.
+
+
+## The Problem
+
+India has **1.2 million Auxiliary Nurse Midwives (ANMs)** serving rural communities. Each one sees 20–30 patients a day. Each one spends up to **40% of that day filling paper registers** — redundant, manual, error-prone.
+
+That's 3 hours a day not spent on patient care. Multiplied across 1.2 million nurses, that's a public health crisis hiding in plain sight.
+
+No digitization tool has solved this because they all assume a keyboard, a stable internet connection, and a nurse who speaks English. None of those exist at the last mile.
 
 ---
 
-## 🌍 The Problem
-In rural healthcare systems, Auxiliary Nurse Midwives (ANMs) and community health officers spend up to 40% of their day manually filling out redundant paper registers. This administrative burden leads to severe burnout, delayed critical care, and poor public health tracking. 
+## The Solution
 
-## 💡 Our Solution
-**MedoX** is multimodal AI assistant designed for the last mile. A nurse simply speaks into her phone in her natural dialect. MedoX transcribes the audio, extracts clinical vitals using specialized medical AI, and autonomously updates national health databases, schedules follow-ups, and manages clinic inventory in real-time.
+**MedoX** is a multimodal AI assistant built specifically for the last mile.
 
----
+A nurse holds her phone, speaks naturally about her patient — in any dialect, at any pace. MedoX listens, transcribes, extracts clinical structure, and autonomously updates every system that needs updating. The nurse never types a single character.
 
-## ✨ Key Features (The 5 Pillars)
-
-1. **🏠 Home (AI Assistant):** A multimodal chatbot powered by MedGemma for clinical guidance and Gemini 2.5 Flash for analyzing medical images (prescriptions, visible symptoms).
-2. **🎙️ Voice Scribe:** Uses locally processed Whisper AI to transcribe chaotic voice notes into structured SBAR (Situation, Background, Assessment, Recommendation) formats.
-3. **📂 Patient Records:** A localized database of patient visits featuring a one-click portal to a live **Looker Studio Public Health Dashboard** for epidemic tracking.
-4. **📅 Tasks (Smart Calendar):** Two-way synchronization with Google Calendar. The AI automatically detects follow-up dates in voice notes and schedules them. Marking a task complete in the app updates the cloud calendar instantly.
-5. **📦 Stock (Agentic Inventory):** Real-time clinic inventory management. Tapping `+` or `-` in the app directly reads/writes to a centralized Google Sheet, alerting the district PHC when essential medicines run low.
+One voice note. Thirty seconds. Everything done.
 
 ---
 
-## 🛠️ Technology Stack
+## Demo
 
-* **Frontend:** React Native (Expo)
-* **Backend:** Django, Python
-* **AI & Machine Learning:** * **MedGemma-27b-text-it** (via Featherless.ai API) for medical structuring and chat.
-  * **Gemini 2.5 Flash** (via Google Developer API) for multimodal image analysis.
-  * **Faster-Whisper (small.en)** for fast, CPU-efficient audio transcription.
-* **Agentic Integrations:** Google Sheets API, Google Calendar API, Google Looker Studio.
+[![MedoX Demo Video]
+(YOUR_DEMO_LINK_HERE)
 
 ---
 
-## 🚀 Installation & Setup
+## Key Features
 
-To run MedoX locally, you will need to set up both the frontend and backend environments, as well as provide your own API keys.
+### 🎙️ Voice Scribe
+Hold the mic button, speak naturally about your patient. MedoX uses **Faster-Whisper** to transcribe locally, then sends the transcript to **MedGemma-27b** via **featherless.ai** to extract a structured SBAR (Situation, Background, Assessment, Recommendation) clinical note. A live pipeline shows every step as it happens.
+
+### 🤖 Autonomous Agent Actions
+After every voice note, MedoX autonomously:
+- Saves the structured patient record to a local database
+- Updates the **Google Sheets** district patient registry
+- Schedules the follow-up appointment in **Google Calendar**
+- Pushes the diagnosis data to the **Looker Studio** epidemic tracker
+
+Zero manual steps. Zero extra taps.
+
+### 🏠 Dashboard
+Personalized home screen showing today's patient count, pending follow-ups, and live low-stock alerts. Every screen is one tap away.
+
+### 🧠 AI Assistant
+A clinical chat interface powered by **MedGemma-27b via featherless.ai**. Ask about symptoms, treatment protocols, drug dosages, or referral criteria — all tuned for community health contexts. Supports image input for analyzing prescriptions or visible symptoms via **Gemini 2.5 Flash**.
+
+### 📂 Patient Records
+Full history of every patient visit, searchable and structured. Tap **District Dashboard ↗** to open the live **Looker Studio** public health view — giving district health officers real-time visibility into diagnosis trends and emerging outbreak clusters across all ANMs in their district.
+
+### 📅 Community Tasks
+Auto-synced follow-up list pulled from **Google Calendar**. Mark a visit complete and it updates the cloud instantly.
+
+### 📦 PHC Inventory
+Live medicine stock tracker synced bidirectionally with **Google Sheets**. Low-stock items trigger automatic alerts to the district PHC for restocking.
+
+---
+
+## Technology Stack
+
+| Layer | Technology |
+|---|---|
+| Mobile Frontend | React Native (Expo) |
+| Backend | Django, Python 3.9+ |
+| Medical AI | MedGemma-27b-text-it via **featherless.ai** API |
+| Multimodal AI | Gemini 2.5 Flash (Google Developer API) |
+| Voice Transcription | Faster-Whisper (small.en, CPU-efficient) |
+| Patient Registry | Google Sheets API |
+| Scheduling | Google Calendar API |
+| Public Health Dashboard | Google Looker Studio |
+| Auth & Storage | AsyncStorage, Django ORM |
+
+---
+
+## Why featherless.ai
+
+MedGemma is Google DeepMind's open-source model trained specifically on medical data. It understands clinical language, drug names, symptom patterns, and treatment protocols in a way general-purpose models don't.
+
+**featherless.ai** gave us serverless access to MedGemma-27b without managing GPU infrastructure — critical for a project designed to run in low-resource environments. Every clinical note extraction, every SBAR structure, every AI chat response runs through MedGemma via featherless.ai.
+
+---
+
+## Impact
+
+| Metric | Value |
+|---|---|
+| Target users | 1.2 million ANMs across India |
+| Time saved per nurse per day | ~3 hours |
+| Systems updated per voice note | 4 (DB, Sheets, Calendar, Looker Studio) |
+| Infrastructure required | A smartphone and a voice |
+
+---
+
+## Installation
 
 ### Prerequisites
-* Node.js and npm
-* Python 3.9+
-* Google Cloud Service Account (`medox_service_account.json`)
-* `.env` file containing your API keys for Featherless, Gemini, Google Sheets, and Google Calendar.
+- Node.js 18+ and npm
+- Python 3.9+
+- Google Cloud Service Account (`medox_service_account.json`)
+- API keys for Featherless.ai, Gemini, Google Sheets, and Google Calendar
 
-### Environment Variables (`.env`)
-Create a `.env` file in the root directory of your **backend** (`backend/.env`) and add the following variables:
+### Backend Setup
 
-* DATABASE_URL=your_database_url
-* SECRET_KEY=your_django_secret_key
-* GEMINI=your_gemini_api_key
-* FEATHERLESS=your_featherless_api_key
-* SHEETS=your_master_records_sheet_id
-* CALENDAR=your_google_calendar_id
-* INVENTORY_SHEET=your_inventory_sheet_id
+```bash
+# Clone the repo
+git clone https://github.com/abhi-afk-dev/medox.git
+cd medox
 
-
-### 1. Backend (Django) Setup
-Open your terminal and run the following commands:
-# Create and activate a virtual environment
+# Create virtual environment
 python -m venv env
-source env/bin/activate  # On Windows use: env\Scripts\activate
+source env/bin/activate  # Windows: env\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Navigate to the backend directory
-cd backend
+# Add your environment variables
+cp .env.example backend/.env
+# Edit backend/.env with your API keys
 
-# Ensure your .env and medox_service_account.json are in the root backend folder!
+# Place your service account file
+# medox_service_account.json → /backend/
 
 # Start the server
+cd backend
 python manage.py runserver 0.0.0.0:8000
+```
 
-### 2. Frontend (React Native) Setup
-Open a new terminal window and run:
-# Navigate to the frontend directory
+### Frontend Setup
+
+```bash
+# In a new terminal
 cd frontend
-
-# Install dependencies (if not already installed)
 npm install
-
-# Start the Expo server
 npm start
+```
 
+> **Note:** Update the `API_BASE` IP in the frontend code to match your local network IP where Django is running.
 
-Note: Ensure you update the API_URL IP addresses in the React Native code to match your local network IP where Django is running.
+### Environment Variables
 
-🏆 Hackathon Details
+Create `backend/.env` with the following:
 
-This project was built for ImpactHacks. A special thanks to the sponsor Featherless.ai for providing access to the powerful MedGemma open-source model, which handles the core medical reasoning of this application.
+```
+DATABASE_URL=your_database_url
+SECRET_KEY=your_django_secret_key
+GEMINI=your_gemini_api_key
+FEATHERLESS=your_featherless_api_key
+SHEETS=your_master_records_sheet_id
+CALENDAR=your_google_calendar_id
+INVENTORY_SHEET=your_inventory_sheet_id
+```
+
+---
+
+## Team
+
+| Name | Role |
+|---|---|
+| Abhilash Kr. Mishra | Full-Stack Development, UI/UX Design, AI Integration |
+
+---
+
+## Acknowledgements
+
+Special thanks to **[featherless.ai](https://featherless.ai)** for providing access to MedGemma-27b — the medical reasoning backbone of MedoX — and to the **Global NGO Executive Committee (GNEC)** for hosting a platform dedicated to tech-driven civil society solutions.
+
+---
+
+*MedoX is a hackathon prototype. It is not a certified medical device and should not be used as a substitute for professional clinical judgment.*

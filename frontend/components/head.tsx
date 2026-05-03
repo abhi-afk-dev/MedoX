@@ -11,22 +11,22 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFonts, Plaster_400Regular } from "@expo-google-fonts/plaster";
-import { useRouter } from "expo-router"; 
+import { useRouter, usePathname } from "expo-router";
 
 const { width } = Dimensions.get("window");
 
 const MENU_ITEMS = [
-  { title: "Home", icon: "home", route: "/" },
-  { title: "Transcribing", icon: "mic", route: "/voice" },
+  { title: "Dashboard", icon: "home", route: "/" },
+  { title: "AI Assistant", icon: "chatbubbles", route: "/chat" },
+  { title: "Voice Scribe", icon: "mic", route: "/voice" },
   { title: "Records", icon: "receipt", route: "/records" },
   { title: "Tasks", icon: "calendar", route: "/tasks" },
   { title: "Stock", icon: "cube", route: "/stock" },
-  // { title: "Account", route: "/account" },
-  // { title: "Log Out", route: "logout" },
 ];
 
 const Header = () => {
-  const router = useRouter(); 
+  const router = useRouter();
+  const pathname = usePathname();
   const [showSettingsOverlay, setShowSettingsOverlay] = useState(false);
   const slideAnim = useRef(new Animated.Value(0)).current;
 
@@ -49,16 +49,57 @@ const Header = () => {
 
   const handleNavigation = (route: string) => {
     toggleSettings();
-
     setTimeout(() => {
-      if (route === "logout") {
-        console.log("Handle Logout Logic Here");
-        // router.replace('/login');
-      } else {
-        router.push(route as any);
-      }
+      router.push(route as any);
     }, 100);
   };
+
+  const getHeaderContent = () => {
+    switch (pathname) {
+      case "/":
+        return {
+          title: "Medo",
+          symbol: "X",
+          // subtitle: "Public Health Command Center",
+        };
+      case "/chat":
+        return {
+          title: "Medo",
+          symbol: "X",
+          title2: "  AI",
+          // subtitle: "MedGemma",
+          subtitle2: "powered by MedGemma",
+        };
+      case "/voice":
+        return {
+          title: "Voice Scribe",
+          symbol: "",
+          subtitle: "Whisper SBAR Generator",
+        };
+      case "/records":
+        return {
+          title: "Patient Records",
+          symbol: "",
+          subtitle: "Encrypted History & DISTRICT TRACKING",
+        };
+      case "/tasks":
+        return {
+          title: "Community Tasks",
+          symbol: "",
+          subtitle: "Google Calendar Sync",
+        };
+      case "/stock":
+        return {
+          title: "PHC Inventory",
+          symbol: "",
+          subtitle: "Live PHC Stock Sheet",
+        };
+      default:
+        return { title: "Medo", symbol: "X", subtitle: "Medical Assistant" };
+    }
+  };
+
+  const { title, title2, symbol, subtitle, subtitle2 } = getHeaderContent();
 
   const backdropOpacity = slideAnim.interpolate({
     inputRange: [0, 1],
@@ -79,10 +120,26 @@ const Header = () => {
   return (
     <SafeAreaView edges={["top"]} style={styles.safeArea}>
       <View style={styles.header}>
-        <View style={styles.headerTitleContainer}>
-          <Text style={styles.logoText}>Medo</Text>
-          <Text style={styles.logoSymbol}>X</Text>
-        </View>
+        {/* Dynamic Header Left Section */}
+        <TouchableOpacity
+          style={styles.headerLeftContainer}
+          onPress={() => router.push("/")}
+          activeOpacity={0.7}
+        >
+          <View style={styles.titleRow}>
+            <Text style={styles.pageTitle}>{title}</Text>
+            {symbol ? <Text style={styles.logoSymbol}>{symbol}</Text> : null}
+            {title2 ? <Text style={styles.pageTitle}>{title2}</Text> : null}
+          </View>
+          <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
+            {subtitle ? (
+              <Text style={styles.pageSubtitle}>{subtitle}</Text>
+            ) : null}
+            {subtitle2 ? (
+              <Text style={styles.pageSubtitle2}>{subtitle2}</Text>
+            ) : null}
+          </View>
+        </TouchableOpacity>
 
         <TouchableOpacity onPress={toggleSettings} style={styles.iconButton}>
           <Ionicons name="reorder-three-outline" size={28} color="#F4F4F5" />
@@ -103,14 +160,11 @@ const Header = () => {
         style={[styles.slideMenu, { transform: [{ translateX }] }]}
       >
         <View style={styles.menuHeader}>
-          <Text style={styles.menuTitle}>Settings</Text>
-          {/* <TouchableOpacity onPress={toggleSettings}>
-            <Ionicons name="close" size={24} color="#F4F4F5" />
-          </TouchableOpacity> */}
+          <Text style={styles.menuTitle}>Menu</Text>
         </View>
 
         <View style={styles.menuItems}>
-          {MENU_ITEMS.map((item, index) => (
+          {MENU_ITEMS.map((item) => (
             <TouchableOpacity
               key={item.title}
               style={styles.menuItem}
@@ -132,45 +186,57 @@ const Header = () => {
 export default Header;
 
 const styles = StyleSheet.create({
-  safeArea: {
-    backgroundColor: "#09090b",
-    zIndex: 50,
-  },
+  safeArea: { backgroundColor: "#09090b", zIndex: 50 },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: "#27272A",
     backgroundColor: "#09090b",
     zIndex: 60,
   },
-  menuNav: {
-    flexDirection: "row",
-    gap:15
+  headerLeftContainer: {
+    flexDirection: "column",
+    justifyContent: "center",
   },
-  headerTitleContainer: {
+  titleRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    gap: 2,
+  },
+  pageTitle: {
+    color: "#F4F4F5",
+    fontWeight: "600",
+    fontSize: 24,
+    letterSpacing: 0.5,
   },
   logoSymbol: {
     color: "#4C8EF5",
     fontFamily: "Plaster_400Regular",
-    fontSize: 40,
+    fontSize: 32,
     fontWeight: "600",
   },
-  logoText: {
-    color: "#F4F4F5",
-    fontWeight: "500",
-    fontSize: 24,
-    letterSpacing: 0.5,
+  pageSubtitle: {
+    color: "#71717A",
+    fontSize: 10,
+    fontWeight: "600",
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    marginTop: 2,
   },
-  iconButton: {
-    padding: 4,
+  pageSubtitle2: {
+    color: "#4C8EF5",
+    fontSize: 10,
+    fontWeight: "600",
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    marginTop: 2,
   },
+  iconButton: { padding: 4 },
+  menuNav: { flexDirection: "row", gap: 15 },
   backdrop: {
     position: "absolute",
     top: 0,
@@ -181,9 +247,7 @@ const styles = StyleSheet.create({
     zIndex: 90,
     height: Dimensions.get("window").height,
   },
-  backdropClick: {
-    flex: 1,
-  },
+  backdropClick: { flex: 1 },
   slideMenu: {
     position: "absolute",
     top: 0,
@@ -209,14 +273,8 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     marginTop: 20,
   },
-  menuTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#F4F4F5",
-  },
-  menuItems: {
-    gap: 8,
-  },
+  menuTitle: { fontSize: 20, fontWeight: "600", color: "#F4F4F5" },
+  menuItems: { gap: 8 },
   menuItem: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -225,9 +283,5 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#27272A",
   },
-  menuItemText: {
-    fontSize: 16,
-    color: "#E4E4E7",
-    fontWeight: "500",
-  },
+  menuItemText: { fontSize: 16, color: "#E4E4E7", fontWeight: "500" },
 });

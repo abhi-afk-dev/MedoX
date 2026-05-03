@@ -41,7 +41,7 @@ export default function InterfacePage() {
   const keyboardHeight = useKeyboardHeight();
   const [playingMessageId, setPlayingMessageId] = useState<string | null>(null);
 
-  const API_URL = "http://192.168.0.111:8000/med/";
+const API_BASE = "[http://10.26.147.30:8000](http://10.26.147.30:8000)/med/";
 
   useEffect(() => {
     if (isLoading) {
@@ -194,7 +194,7 @@ export default function InterfacePage() {
         type: "audio/wav",
       });
 
-      const response = await fetch(API_URL, {
+      const response = await fetch(API_BASE, {
         method: "POST",
         headers: { "Content-Type": "multipart/form-data" },
         body: formData,
@@ -230,7 +230,7 @@ export default function InterfacePage() {
     ]);
 
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetch(API_BASE, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: promptToSend }),

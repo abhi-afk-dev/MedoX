@@ -10,7 +10,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import Header from "../components/head";
 
-const API_URL = "http://192.168.0.111:8000/inventory/";
+const API_BASE = "http://10.26.147.30:8000/inventory/";
 
 export default function StockPage() {
   const [stock, setStock] = useState<any[]>([]);
@@ -20,7 +20,7 @@ export default function StockPage() {
   const fetchInventory = async () => {
     setLoading(true);
     try {
-      const response = await fetch(API_URL);
+      const response = await fetch(API_BASE);
       const data = await response.json();
       if (data.inventory) {
         setStock(data.inventory);
@@ -52,7 +52,7 @@ export default function StockPage() {
         ),
       );
 
-      await fetch(API_URL, {
+      await fetch(API_BASE, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: id, quantity: newQty }),
@@ -132,7 +132,6 @@ export default function StockPage() {
       <Header />
       <View style={styles.content}>
         <View style={styles.headerRow}>
-          <Text style={styles.pageTitle}>PHC Inventory</Text>
           <TouchableOpacity style={styles.syncButton} onPress={fetchInventory}>
             <Ionicons name="sync" size={16} color="#09090b" />
             <Text style={styles.syncText}>Sync Sheets</Text>
