@@ -33,7 +33,7 @@ One voice note. Thirty seconds. Everything done.
 ## Demo
 
 [![MedoX Demo Video]
-(YOUR_DEMO_LINK_HERE)
+(https://youtu.be/PPfoL2T5IFY)
 
 ---
 
